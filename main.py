@@ -9,12 +9,16 @@ from selenium.webdriver.support.ui import WebDriverWait
 import time
 
 options = Options()
+# Stop browser closing automatically 
 options.add_experimental_option("detach", True)
+
+# Get rid of Chrome "chrome-is-being-controlled-by-automated-test-software"
+options.add_experimental_option("excludeSwitches", ['enable-automation'])
 
 driver = webdriver.Chrome(
     service=Service(ChromeDriverManager().install()), options=options
 )
-# driver.maximize_window()
+
 
 driver.get("https://orteil.dashnet.org/cookieclicker/")
 
@@ -22,6 +26,9 @@ cookie_id = "bigCookie"
 cookies_id = "cookies"
 product_price_prefix = "productPrice"
 product_prefix = "product"
+upgrade_prefix = "upgrade0"
+upgrade_price_class = "price"
+upgrades_enabler = "tooltipCrate"
 
 WebDriverWait(driver, 5).until(
     EC.presence_of_element_located((By.XPATH, "/html/body/div[1]/div/a[1]"))
@@ -46,6 +53,7 @@ while True:
     cookie_counter = driver.find_element(By.ID, cookies_id).text.split(" ")[0]
     cookie_counter = int(cookie_counter.replace(",", ""))
 
+
     for i in range(4):
         product_price = driver.find_element(
             By.ID, product_price_prefix + str(i)
@@ -56,8 +64,8 @@ while True:
 
         product_price = int(product_price)
 
+
         if cookie_counter >= product_price:
             product = driver.find_element(By.ID, product_prefix + str(i))
             product.click()
             break
-    # upgrades = driver.find_element(By.CLASS_NAME, "product unlocked enabled")
